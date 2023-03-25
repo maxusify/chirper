@@ -1,21 +1,19 @@
+import { useState } from "react";
 import { type NextPage } from "next";
 import Head from "next/head";
-
-import { SignInButton, useUser } from "@clerk/nextjs";
-import { api, type RouterOutputs } from "@/utils/api";
-
+import Image from "next/image";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import Image from "next/image";
+import { SignInButton, useUser } from "@clerk/nextjs";
+
+import { api, type RouterOutputs } from "@/utils/api";
 import { LoadingPage } from "@/components/LoadingSpinner";
-import { useState } from "react";
+
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
   const { user } = useUser();
-
   const [input, setInput] = useState("");
-
   const ctx = api.useContext();
 
   const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
@@ -50,6 +48,7 @@ const CreatePostWizard = () => {
 };
 
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
+
 const PostView = (props: PostWithUser) => {
   const { post, author } = props;
 
