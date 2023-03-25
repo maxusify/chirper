@@ -1,9 +1,12 @@
-import { privateProcedure } from "./../trpc";
+import { POSTS_LOAD_LIMIT } from "@/constants";
 import { z } from "zod";
 import { Ratelimit } from "@upstash/ratelimit"; // for deno: see above
 import { Redis } from "@upstash/redis";
-
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  privateProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { filterUserForClient } from "@/server/helpers/filterUserForClient";
@@ -46,7 +49,7 @@ const ratelimit = new Ratelimit({
 export const postsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
-      take: 100,
+      take: POSTS_LOAD_LIMIT,
       orderBy: { createdAt: "desc" },
     });
 
@@ -90,7 +93,7 @@ export const postsRouter = createTRPCRouter({
           where: {
             authorId: input.userId,
           },
-          take: 100,
+          take: POSTS_LOAD_LIMIT,
           orderBy: {
             createdAt: "desc",
           },
