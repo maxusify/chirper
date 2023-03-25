@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { type NextPage } from "next";
 import { toast } from "react-hot-toast";
 import dayjs from "dayjs";
@@ -11,18 +10,42 @@ import { api } from "@/utils/api";
 import { LoadingPage, LoadingSpinner } from "@/components/LoadingSpinner";
 import PageContainer from "@/components/PageContainer";
 import PostView from "@/components/PostView";
+import {
+  type SubmitHandler,
+  useForm,
+  type SubmitErrorHandler,
+} from "react-hook-form";
+import { z } from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
 
 dayjs.extend(relativeTime);
 
+type Inputs = {
+  content: string;
+};
+
 const CreatePostWizard = () => {
+  const { register, handleSubmit, reset } = useForm<Inputs>({
+    resolver: zodResolver(
+      z
+        .object({
+          content: z
+            .string()
+            .min(1, "Post must contain at least one character!")
+            .max(250, "Your post is too long."),
+        })
+        .required()
+    ),
+  });
+
   const { user } = useUser();
-  const [input, setInput] = useState("");
   const ctx = api.useContext();
 
   const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
     onSuccess: () => {
-      setInput("");
       void ctx.posts.getAll.invalidate();
+      // reset();
     },
     onError: (error) => {
       const errorMessage = error.data?.zodError?.fieldErrors.content;
@@ -37,6 +60,18 @@ const CreatePostWizard = () => {
 
   if (!user) return null;
 
+  const onSubmit: SubmitHandler<Inputs> = (data: Inputs, event) => {
+    if (event) event.preventDefault();
+    mutate({ content: data.content });
+  };
+
+  const onError: SubmitErrorHandler<Inputs> = (error, event) => {
+    if (event) event.preventDefault();
+    if (error && error.content && error.content.message)
+      toast.error(error.content.message);
+    reset();
+  };
+
   return (
     <div className="flex w-full gap-3">
       <Image
@@ -46,30 +81,24 @@ const CreatePostWizard = () => {
         width={64}
         height={64}
       />
-      <input
-        placeholder="Type something"
-        className="grow bg-transparent outline-none"
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            event.preventDefault();
-            if (input !== "") {
-              mutate({ content: input });
-            }
-          }
-        }}
-        disabled={isPosting}
-      />
-      {input !== "" && !isPosting && (
-        <button onClick={() => mutate({ content: input })}>Submit</button>
-      )}
-      {isPosting && (
-        <div className="flex items-center justify-center">
-          <LoadingSpinner size={20} />
-        </div>
-      )}
+      <form
+        className="flex grow justify-center"
+        onSubmit={(e) => void handleSubmit(onSubmit, onError)(e)}
+      >
+        <input
+          placeholder="Type something"
+          className="grow bg-transparent outline-none"
+          type="text"
+          disabled={isPosting}
+          {...register("content", { required: true })}
+        />
+        {!isPosting && <button type="submit">Submit</button>}
+        {isPosting && (
+          <div className="flex items-center justify-center">
+            <LoadingSpinner size={20} />
+          </div>
+        )}
+      </form>
     </div>
   );
 };
