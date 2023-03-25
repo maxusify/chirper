@@ -1,9 +1,10 @@
-import { api } from "@/utils/api";
-import Head from "next/head";
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
+import Head from "next/head";
+
 import PageContainer from "@/components/PageContainer";
 import PostView from "@/components/PostView";
 import { generateSSGHelper } from "@/server/helpers/ssgHelper";
+import { api } from "@/utils/api";
 
 const SinglePostPage: NextPage<{ postId: string }> = ({ postId }) => {
   const { data } = api.posts.getById.useQuery({

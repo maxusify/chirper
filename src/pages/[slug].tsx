@@ -1,11 +1,12 @@
-import { api } from "@/utils/api";
-import Head from "next/head";
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import PageContainer from "@/components/PageContainer";
+import Head from "next/head";
 import Image from "next/image";
+
 import { LoadingPage } from "@/components/LoadingSpinner";
+import PageContainer from "@/components/PageContainer";
 import PostView from "@/components/PostView";
 import { generateSSGHelper } from "@/server/helpers/ssgHelper";
+import { api } from "@/utils/api";
 
 const ProfileFeed = ({ userId }: { userId: string }) => {
   const { data, isLoading } = api.posts.getPostsByUserId.useQuery({ userId });

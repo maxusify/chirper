@@ -1,23 +1,21 @@
-import { type NextPage } from "next";
+import {
+  type SubmitErrorHandler,
+  type SubmitHandler,
+  useForm,
+} from "react-hook-form";
 import { toast } from "react-hot-toast";
+import { SignInButton, useUser } from "@clerk/nextjs";
+import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-
+import { type NextPage } from "next";
 import Image from "next/image";
-import { SignInButton, useUser } from "@clerk/nextjs";
+import { z } from "zod";
 
-import { api } from "@/utils/api";
 import { LoadingPage, LoadingSpinner } from "@/components/LoadingSpinner";
 import PageContainer from "@/components/PageContainer";
 import PostView from "@/components/PostView";
-import {
-  type SubmitHandler,
-  useForm,
-  type SubmitErrorHandler,
-} from "react-hook-form";
-import { z } from "zod";
-
-import { zodResolver } from "@hookform/resolvers/zod";
+import { api } from "@/utils/api";
 
 dayjs.extend(relativeTime);
 
@@ -107,7 +105,6 @@ const Feed = () => {
   const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
 
   if (postsLoading) return <LoadingPage />;
-
   if (!data) return <div>Something wen wrong.</div>;
 
   return (

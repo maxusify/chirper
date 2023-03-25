@@ -18,7 +18,12 @@ const config = {
   parserOptions: {
     project: path.join(__dirname, "tsconfig.json"),
   },
-  plugins: ["@typescript-eslint", "unused-imports"],
+  plugins: [
+    "@typescript-eslint",
+    "react",
+    "unused-imports",
+    "simple-import-sort",
+  ],
   extends: ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
   rules: {
     "@typescript-eslint/consistent-type-imports": [
@@ -39,6 +44,26 @@ const config = {
         argsIgnorePattern: "^_",
       },
     ],
+    "simple-import-sort/imports": [
+      "error",
+      {
+        groups: [
+          // Packages `react` related packages come first.
+          ["^react", "^@?\\w"],
+          // Internal packages.
+          ["^(@|components)(/.*|$)"],
+          // Side effect imports.
+          ["^\\u0000"],
+          // Parent imports. Put `..` last.
+          ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+          // Other relative imports. Put same-folder imports and `.` last.
+          ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+          // Style imports.
+          ["^.+\\.?(css)$"],
+        ],
+      },
+    ],
+    "simple-import-sort/exports": "error",
   },
 };
 

@@ -1,16 +1,17 @@
-import { POSTS_LOAD_LIMIT } from "@/constants";
-import { z } from "zod";
+import { clerkClient } from "@clerk/nextjs/server";
+import type { Post } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit"; // for deno: see above
 import { Redis } from "@upstash/redis";
+import { z } from "zod";
+
+import { POSTS_LOAD_LIMIT } from "@/constants";
 import {
   createTRPCRouter,
   privateProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { clerkClient } from "@clerk/nextjs/server";
-import { TRPCError } from "@trpc/server";
 import { filterUserForClient } from "@/server/helpers/filterUserForClient";
-import type { Post } from "@prisma/client";
 
 const addUserDataToPosts = async (posts: Post[]) => {
   const users = (

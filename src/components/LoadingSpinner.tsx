@@ -33,4 +33,4 @@ const LoadingPage = () => {
   );
 };
 
-export { LoadingSpinner, LoadingPage };
+export { LoadingPage,LoadingSpinner };
