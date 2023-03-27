@@ -10,15 +10,15 @@ dayjs.extend(relativeTime);
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
 const PostView = (props: PostWithUser) => {
-  const { post, author } = props;
+  const {
+    post: { content, createdAt, id },
+    author: { username, profileImageUrl },
+  } = props;
 
   return (
-    <div
-      key={post.id}
-      className="flex items-center gap-3 border-b border-slate-400 p-4"
-    >
+    <div className="flex items-center gap-3 border-b border-slate-400 p-4">
       <Image
-        src={author.profileImageUrl}
+        src={profileImageUrl}
         alt="Author profile picture"
         className="h-12 w-12 rounded-full"
         width={48}
@@ -26,16 +26,16 @@ const PostView = (props: PostWithUser) => {
       />
       <div className="flex flex-col">
         <div className="flex gap-2 text-slate-300">
-          <Link href={`/@${author.username}`}>
-            <span>{`@${author.username}`}</span>
+          <Link href={`/@${username}`}>
+            <span className="font-bold">{`@${username}`}</span>
           </Link>
-          <Link href={`/post/${post.id}`}>
-            <span className="font-thin">{`· ${dayjs(
-              post.createdAt
-            ).fromNow()}`}</span>
+          <Link href={`/post/${id}`}>
+            <span className="font-thin">
+              {`· ${dayjs(createdAt).fromNow()}`}
+            </span>
           </Link>
         </div>
-        <span className="text-xl">{post.content}</span>
+        <span className="text-xl">{content}</span>
       </div>
     </div>
   );
