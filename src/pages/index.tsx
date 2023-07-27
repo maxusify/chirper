@@ -105,7 +105,7 @@ const Feed = () => {
   const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
 
   if (postsLoading) return <LoadingPage />;
-  if (!data) return <div>Something wen wrong.</div>;
+  if (!data) return <div className="mx-auto w-full">Something went wrong.</div>;
 
   return (
     <div className="flex flex-col">
